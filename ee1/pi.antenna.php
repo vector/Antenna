@@ -86,7 +86,24 @@ class Antenna {
 
 		// If it's not YouTube or Vimeo, bail
 		if (strpos($video_url, "youtube.com/") !== FALSE) {
+			
 			$url = "http://www.youtube.com/oembed?format=json&url=";
+			
+			// If it's youtube and from a gdata feed, let's put it in the
+			// format that oembed likes. - Change by Jesse Bunch
+			if (strpos($video_url, "gdata.youtube.com") !== FALSE) {
+				
+				$arrMatches = array();
+				preg_match('/videos\/([A-Za-z0-9\-\_]+)\/?$/', $video_url, $arrMatches);
+				
+				if (!empty($arrMatches[1])) {
+					$video_url = sprintf('http://youtube.com/watch?v=%s', $arrMatches[1]);
+				}
+				
+				unset($arrMatches);
+				
+			}
+			
 		} else if (strpos($video_url, "vimeo.com/") !== FALSE) {
 			$url = "http://vimeo.com/api/oembed.json?url=";
 		} else if (strpos($video_url, "wistia.com/") !== FALSE) {
