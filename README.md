@@ -36,7 +36,7 @@ The `iframe_class` and `iframe_id` parameters will apply a class and/or id to yo
 
 If used as a single tag, it returns the HTML embed/object code for the video. If used as a pair, you get access to the 5 variables above and can use them in conditionals.
 
-If you're using Vimeo, you get access to four more parameters:
+If you're using Vimeo, you get access to five more parameters:
 
 - vimeo_byline='true/false' -- Shows the byline on the video. Defaults to true.
 - vimeo_title='true/false' -- Shows the title on the video. Defaults to true.
