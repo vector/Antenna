@@ -41,8 +41,8 @@ If you're using Vimeo, you get access to four more parameters:
 - vimeo_byline='true/false' -- Shows the byline on the video. Defaults to true.
 - vimeo_title='true/false' -- Shows the title on the video. Defaults to true.
 - vimeo_autoplay='true/false' -- Automatically start playback of the video. Defaults to false.
-- vimeo_portrait='true/false' -- Whether or not to display the video creator's avatar in the video poster frame. Defaults to false.
-- vimeo_color="888888" -- A hexadecimal color code to be used as the Vimeo control accent color
+- vimeo_portrait='true/false' -- Whether or not to display the video creator's avatar in the video poster frame. Defaults to true.
+- vimeo_color="888888" -- A hexadecimal color code to be used as the Vimeo control accent color.
 
 **NOTE** For this to work with all urls please ensure that in Weblog/Channel -> Preferences, you have 'Automatically turn URLs and email addresses into links?' set to 'No'. 
 
