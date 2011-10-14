@@ -73,6 +73,7 @@ class Antenna
 		$vimeo_title = ($this->EE->TMPL->fetch_param('vimeo_title') == "false") ? "&title=false" : "";
 		$vimeo_autoplay = ($this->EE->TMPL->fetch_param('vimeo_autoplay') == "true") ? "&autoplay=true" : "";
 		$vimeo_portrait = ($this->EE->TMPL->fetch_param('vimeo_portrait') == "false") ? "&portrait=0" : "";
+		$vimeo_color = ($this->EE->TMPL->fetch_param('vimeo_color')) ? "&color=".$this->EE->TMPL->fetch_param('vimeo_color') : "";
 
 		// If it's not YouTube, Vimeo, or Wistia, bail
 		if (strpos($video_url, "youtube.com/") !== FALSE) {
@@ -133,6 +134,21 @@ class Antenna
     	    $video_info->html =  substr($video_info->html, 0, $param_pos) . $embed_str . substr($video_info->html, $param_pos);
 	      }
     	}
+    	
+   
+    	if(($this->EE->TMPL->fetch_param('iframe_class') || 
+    		$this->EE->TMPL->fetch_param('iframe_id')) && 
+    		strpos($video_info->html, "<iframe") !== FALSE)
+    	{
+    		if($this->EE->TMPL->fetch_param('iframe_class'))
+    		{
+    			$video_info->html = str_replace('<iframe', '<iframe class="'.$this->EE->TMPL->fetch_param('iframe_class').'"', $video_info->html);
+    		}
+    		if($this->EE->TMPL->fetch_param('iframe_id'))
+    		{
+    			$video_info->html = str_replace('<iframe', '<iframe id="'.$this->EE->TMPL->fetch_param('iframe_id').'"', $video_info->html);
+    		}
+    	}   
     
     
 		//Handle a single tag

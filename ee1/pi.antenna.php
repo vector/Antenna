@@ -85,7 +85,8 @@ class Antenna {
 		$vimeo_title = ($TMPL->fetch_param('vimeo_title') == "false") ? "&title=false" : "";
 		$vimeo_autoplay = ($TMPL->fetch_param('vimeo_autoplay') == "true") ? "&autoplay=true" : "";
 		$vimeo_portrait = ($TMPL->fetch_param('vimeo_portrait') == "false") ? "&portrait=0" : "";
-
+		$vimeo_color = ($TMPL->fetch_param('vimeo_color') != FALSE) ? "&color=".$TMPL->fetch_param('vimeo_color') : "";
+		
 		// If it's not YouTube, Vimeo, or Wistia, bail
 		if (strpos($video_url, "youtube.com/") !== FALSE) {
 			$url = "http://www.youtube.com/oembed?format=json&iframe=1&url=";
@@ -99,7 +100,7 @@ class Antenna {
 			return;
 		}
 
-		$url .= urlencode($video_url) . $max_width . $max_height . $wmode_param . $vimeo_byline . $vimeo_title . $vimeo_autoplay . $vimeo_portrait;
+		$url .= urlencode($video_url) . $max_width . $max_height . $wmode_param . $vimeo_byline . $vimeo_title . $vimeo_autoplay . $vimeo_portrait . $vimeo_color;
 
 		// checking if url has been cached
 		$cached_url = $this->_check_cache($url);
@@ -144,6 +145,21 @@ class Antenna {
         $video_info->html =  substr($video_info->html, 0, $param_pos) . $embed_str . substr($video_info->html, $param_pos);
       }
     }
+    
+
+    	if(($TMPL->fetch_param('iframe_class') != FALSE || 
+    		$TMPL->fetch_param('iframe_id') != FALSE) && 
+    		strpos($video_info->html, "<iframe") !== FALSE)
+    	{
+    		if($TMPL->fetch_param('iframe_class') != FALSE)
+    		{
+    			$video_info->html = str_replace('<iframe', '<iframe class="'.$TMPL->fetch_param('iframe_class').'"', $video_info->html);
+    		}
+    		if($TMPL->fetch_param('iframe_id') != FALSE)
+    		{
+    			$video_info->html = str_replace('<iframe', '<iframe id="'.$TMPL->fetch_param('iframe_id').'"', $video_info->html);
+    		}
+    	}
     
 
 		//Handle a single tag
