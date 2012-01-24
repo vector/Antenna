@@ -91,7 +91,11 @@ class Antenna
 				
 			}
 			
-		} else if (strpos($video_url, "vimeo.com/") !== FALSE) {
+		} 
+		else if (strpos($video_url, "youtu.be/") !== FALSE) {
+			$url = "http://www.youtube.com/oembed?format=json&url=";
+		}
+		else if (strpos($video_url, "vimeo.com/") !== FALSE) {
 			$url = "http://vimeo.com/api/oembed.json?url=";
 		} else if (strpos($video_url, "wistia.com/") !== FALSE) {
 			$url = "http://app.wistia.com/embed/oembed.json?url=";		
