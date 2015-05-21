@@ -76,6 +76,7 @@ class Antenna
 
 		// Some optional YouTube parameters
 		$youtube_rel = $this->EE->TMPL->fetch_param('youtube_rel', null);
+        $youtube_params = $this->EE->TMPL->fetch_param('youtube_params', null);
 
 		// Some optional Vimeo parameters
 		$vimeo_byline	= ($this->EE->TMPL->fetch_param('vimeo_byline') == "false") ? "&byline=false" : "";
@@ -162,12 +163,26 @@ class Antenna
 	    	}
     	}
 
-    	// Inject YouTube rel value if required
-    	if (!is_null($youtube_rel) && (strpos($video_url, "youtube.com/") !== FALSE OR strpos($video_url, "youtu.be/") !== FALSE))
-		{
-			preg_match('/.*?src="(.*?)".*?/', $video_info->html, $matches);
-			if (!empty($matches[1])) $video_info->html = str_replace($matches[1], $matches[1] . '&rel=' . $youtube_rel, $video_info->html);
-		}
+        if ((strpos($video_url, "youtube.com/") !== FALSE OR strpos($video_url, "youtu.be/") !== FALSE))
+        {
+            preg_match('/.*?src="(.*?)".*?/', $video_info->html, $matches);
+
+            if (!empty($matches[1])) {
+                $youtube_url_original = $youtube_url = $matches[1];
+
+                // Inject YouTube rel value if required
+                if(!is_null($youtube_rel)) {
+                    $youtube_url .= '&rel=' . $youtube_rel;
+                }
+
+                // allows for adding additional youtube params eg. modestbranding=1&autohide=1&showinfo=0&controls=0
+                if(!is_null($youtube_params)) {
+                    $youtube_url .= $youtube_params;
+                }
+
+                $video_info->html = str_replace($youtube_url_original, $youtube_url, $video_info->html);
+            }
+        }
 
 
 	// actually setting thumbnails at a reasonably consistent size, as well as getting higher-res images
