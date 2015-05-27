@@ -49,6 +49,10 @@ Antenna will automatically enforce HTTPS if the provided video URL has a protoco
 If you're using YouTube, you get access to one more parameter:
 
 - youtube_rel='0/1' -- Show related videos at end of video. Defaults to 1.
+- youtube_controls='0/1' -- Display the video player controls? Defaults to 1.
+- youtube_showinfo='0/1' -- Display video title? Defaults to 1.
+- youtube_autoplay='0/1' -- Specifies whether the initial video will automatically start to play when the player loads. Defaults to 0.
+- youtube_params='' -- Add additional parameters to Youtube embed url (e.g. "modestbranding=1&autohide=1&showinfo=0&controls=0")
 
 If you're using Vimeo, you get access to four more parameters and one more variable:
 

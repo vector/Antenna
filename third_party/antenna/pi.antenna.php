@@ -32,7 +32,12 @@ class Antenna
 	public $refresh_cache = 10080;			// in mintues (default is 1 week)
 	public $cache_expired = FALSE;
 
-	public function Antenna()
+    // Some optional YouTube parameters
+    private $youtube_params = array(
+        'rel', 'modestbranding', 'autoplay', 'controls', 'showinfo'
+    );
+
+    public function Antenna()
 	{
 		$this->EE =& get_instance();
 
@@ -74,8 +79,7 @@ class Antenna
 			$this->refresh_cache = $this->EE->TMPL->fetch_param('cache_minutes');
 		}
 
-		// Some optional YouTube parameters
-		$youtube_rel = $this->EE->TMPL->fetch_param('youtube_rel', null);
+        $youtube_params = $this->EE->TMPL->fetch_param('youtube_params', null);
 
 		// Some optional Vimeo parameters
 		$vimeo_byline	= ($this->EE->TMPL->fetch_param('vimeo_byline') == "false") ? "&byline=false" : "";
@@ -163,12 +167,29 @@ class Antenna
 	    	}
     	}
 
-    	// Inject YouTube rel value if required
-    	if (!is_null($youtube_rel) && (strpos($video_url, "youtube.com/") !== FALSE OR strpos($video_url, "youtu.be/") !== FALSE))
-		{
-			preg_match('/.*?src="(.*?)".*?/', $video_info->html, $matches);
-			if (!empty($matches[1])) $video_info->html = str_replace($matches[1], $matches[1] . '&rel=' . $youtube_rel, $video_info->html);
-		}
+        if ((strpos($video_url, "youtube.com/") !== FALSE OR strpos($video_url, "youtu.be/") !== FALSE))
+        {
+            preg_match('/.*?src="(.*?)".*?/', $video_info->html, $matches);
+
+            if (!empty($matches[1])) {
+                $youtube_url_original = $youtube_url = $matches[1];
+
+                // $yt_param will be ie. 'modestbranding'
+                foreach($this->youtube_params as $yt_param) {
+                    $yt_value = $this->EE->TMPL->fetch_param('youtube_'.$yt_param, null);   // fetch youtube_modestbranding, etc.
+                    if(!is_null($yt_value)) {  // if set add value to url
+                        $youtube_url .= '&'.$yt_param.'='.$yt_value;   // add to url, ie. &rel=0
+                    }
+                }
+
+                // allows for adding multiple youtube params at once eg. modestbranding=1&autohide=1&showinfo=0&controls=0
+                if(!is_null($youtube_params)) {
+                    $youtube_url .= '&'.$youtube_params;
+                }
+
+                $video_info->html = str_replace($youtube_url_original, $youtube_url, $video_info->html);
+            }
+        }
 
 
 	// actually setting thumbnails at a reasonably consistent size, as well as getting higher-res images
