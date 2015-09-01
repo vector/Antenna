@@ -173,7 +173,7 @@ class Antenna
 		}
 
 		// Inject YouTube enablejsapi value if required
-    	if ( !empty($enablejsapi))
+		if ( !empty($enablejsapi))
 		{
 			preg_match('/.*?src="(.*?)".*?/', $video_info->html, $matches);
 			if (!empty($matches[1])) $video_info->html = str_replace($matches[1], $matches[1] . '&enablejsapi=' . $enablejsapi, $video_info->html);
