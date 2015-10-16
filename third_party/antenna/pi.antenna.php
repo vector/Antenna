@@ -43,6 +43,7 @@ class Antenna
 
 		$plugin_vars = array(
 			"title"         =>  "video_title",
+			"source"         =>  "video_source", // added by Mike Stecker: get the name of the website
 			"html"          =>  "embed_code",
 			"author_name"   =>  "video_author",
 			"author_url"    =>  "video_author_url",
@@ -210,6 +211,21 @@ class Antenna
 			if (!empty($matches[1])) $video_info->html = str_replace($matches[1], $matches[1] . $youtube_args, $video_info->html);
 		}
 
+	// added by Mike Stecker: get the name of the website
+	if(strpos($video_url, "youtube.com/") !== FALSE OR strpos($video_url, "youtu.be/") !== FALSE) {
+		$video_info->source = "youtube";
+		}
+	else if (strpos($video_url, "vimeo.com/") !== FALSE) {
+		$video_info->source = "vimeo";
+		}
+	else if (strpos($video_url, "wistia.com/") !== FALSE)
+		{
+		$video_info->source = "wistia";
+		}
+	else if (strpos($video_url, "viddler.com/") !== FALSE)
+		{
+		$video_info->source = "viddler";
+		}
 
 	// actually setting thumbnails at a reasonably consistent size, as well as getting higher-res images
 	if(strpos($video_url, "youtube.com/") !== FALSE OR strpos($video_url, "youtu.be/") !== FALSE) {
@@ -431,6 +447,7 @@ You can also output various pieces of metadata about the YouTube video.
 {exp:antenna url='{the_youtube_or_vimeo_url}' max_width="232" max_height="323" cache_minutes="120" wmode="transparent|opaque|window"}
     {embed_code}
     {video_title}
+    {video_source} {!-- returns: vimeo, youtube, wistia or viddler --}
     {video_author}
     {video_author_url}
     {video_thumbnail}
