@@ -67,6 +67,8 @@ class Antenna
 		$max_height = ($this->EE->TMPL->fetch_param('max_height')) ? "&maxheight=" . $this->EE->TMPL->fetch_param('max_height') : "";
 		$wmode = ($this->EE->TMPL->fetch_param('wmode')) ? $this->EE->TMPL->fetch_param('wmode') : "";
 		$wmode_param = ($this->EE->TMPL->fetch_param('wmode')) ? "&wmode=" . $this->EE->TMPL->fetch_param('wmode') : "";
+		$enablejsapi = ($this->EE->TMPL->fetch_param('enablejsapi')) ? $this->EE->TMPL->fetch_param('enablejsapi') : "";
+		$player_id = ($this->EE->TMPL->fetch_param('player_id')) ? $this->EE->TMPL->fetch_param('player_id') : "";
 
 		// Correct for a bug in YouTube response if only maxheight is set and the video is over 612px wide
 		if (empty($max_height)) $max_height = "&maxheight=" . $this->EE->TMPL->fetch_param('max_width');
@@ -194,7 +196,7 @@ class Antenna
 	    		preg_match('/<iframe.*?src="(.*?)".*?<\/iframe>/i', $video_info->html, $matches);
 	    		$append_query_marker = (strpos($matches[1], '?') !== false ? '' : '?');
 
-	    		$video_info->html = preg_replace('/<iframe(.*?)src="(.*?)"(.*?)<\/iframe>/i', '<iframe$1src="$2' . $append_query_marker . '&wmode=' . $wmode . '"$3</iframe>', $video_info->html);
+	    		$video_info->html = preg_replace('/<iframe(.*?)src="(.*?)"(.*?)<\/iframe>/i', '<iframe$1 id="' . $player_id . '" src="$2' . $append_query_marker . '&wmode=' . $wmode . '"$3</iframe>', $video_info->html);
 	    	}
     	}
 
@@ -208,6 +210,13 @@ class Antenna
 			}
 			preg_match('/.*?src="(.*?)".*?/', $video_info->html, $matches);
 			if (!empty($matches[1])) $video_info->html = str_replace($matches[1], $matches[1] . $youtube_args, $video_info->html);
+		}
+
+		// Inject YouTube enablejsapi value if required
+		if ( !empty($enablejsapi))
+		{
+			preg_match('/.*?src="(.*?)".*?/', $video_info->html, $matches);
+			if (!empty($matches[1])) $video_info->html = str_replace($matches[1], $matches[1] . '&enablejsapi=' . $enablejsapi, $video_info->html);
 		}
 
 
