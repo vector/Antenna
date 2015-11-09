@@ -10,7 +10,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 // Leaving this for EE 2 compatibility
 $plugin_info = array(
 	'pi_name'			=> 'Antenna',
-	'pi_version'		=> '2.0.0',
+	'pi_version'		=> '2.1.0',
 	'pi_author'			=> 'Matt Weinberg',
 	'pi_author_url'		=> 'http://www.VectorMediaGroup.com',
 	'pi_description'	=> 'Returns the embed code and various pieces of metadata for YouTube, Vimeo, Wistia, and Viddler Videos',
@@ -64,6 +64,8 @@ class Antenna
 		}
 
 		// Deal with the parameters
+		$id = (ee()->TMPL->fetch_param('id')) ?: '';
+		$class = (ee()->TMPL->fetch_param('class')) ?: '';
 		$video_url = (ee()->TMPL->fetch_param('url')) ?  html_entity_decode(ee()->TMPL->fetch_param('url')) : false;
 		$max_width = (ee()->TMPL->fetch_param('max_width')) ? "&maxwidth=" . ee()->TMPL->fetch_param('max_width') : "";
 		$max_height = (ee()->TMPL->fetch_param('max_height')) ? "&maxheight=" . ee()->TMPL->fetch_param('max_height') : "";
@@ -104,7 +106,7 @@ class Antenna
 			'theme'
 		);
 		$youtube_params = array();
-		
+
 		foreach($youtube_options as $option)
 		{
 			$param = ee()->TMPL->fetch_param('youtube_'.$option, null);
@@ -121,7 +123,7 @@ class Antenna
 		$vimeo_portrait	= (ee()->TMPL->fetch_param('vimeo_portrait') == "false") ? "&portrait=0" : "";
 		$vimeo_api	= (ee()->TMPL->fetch_param('vimeo_api') == "true") ? "&api=1" : "";
 		$vimeo_color 	= (ee()->TMPL->fetch_param('vimeo_color') !== false) ? "&color=".str_replace('#', '', ee()->TMPL->fetch_param('vimeo_color')) : "";
-		
+
 		// Some optional Viddler parameters
 		$viddler_type = (ee()->TMPL->fetch_param('viddler_type')) ? "&type=" . ee()->TMPL->fetch_param('viddler_type') : "";
 		$viddler_ratio = (ee()->TMPL->fetch_param('viddler_ratio')) ? "&ratio=" . ee()->TMPL->fetch_param('viddler_ratio') : "";
@@ -184,7 +186,7 @@ class Antenna
 	      	$embed_str = ' wmode="' . $wmode .'" ';
 
 	      	// Determine whether we are dealing with iframe or embed and handle accordingly
-	      	if (strpos($video_info->html, "<iframe") === false) {
+			if ($this->videoUsesIFrame($video_info->html)) {
 		        $param_pos = strpos( $video_info->html, "<embed" );
 		        $video_info->html = substr($video_info->html, 0, $param_pos) . $param_str . substr($video_info->html, $param_pos);
 	        	$param_pos = strpos( $video_info->html, "<embed" ) + 6;
@@ -199,6 +201,12 @@ class Antenna
 	    		$video_info->html = preg_replace('/<iframe(.*?)src="(.*?)"(.*?)<\/iframe>/i', '<iframe$1src="$2' . $append_query_marker . '&wmode=' . $wmode . '"$3</iframe>', $video_info->html);
 	    	}
     	}
+
+		// Add the class attribute to the video HTML.
+		$video_info->html = $this->decorateVideoHtmlWithClass($video_info->html, $class);
+
+		// Add the ID attribute to the video HTML.
+		$video_info->html = $this->decorateVideoHtmlWithId($video_info->html, $id);
 
     	// Inject YouTube parameters if required
     	if( !empty($youtube_params) && (strpos($video_url, "youtube.com/") !== FALSE OR strpos($video_url, "youtu.be/") !== FALSE))
@@ -422,4 +430,64 @@ class Antenna
 		@chmod($file, DIR_WRITE_MODE);
 	}
 
+	/**
+	 * Returns a boolean indicating whether the given HTML uses an iFrame.
+	 *
+	 * @param string $videoHtml
+	 *
+	 * @return bool
+	 */
+	private function videoUsesIFrame($videoHtml)
+	{
+		return strpos($videoHtml, "<iframe") !== false;
+	}
+
+	/**
+	 * Adds a class attribute to the given video HTML string.
+	 *
+	 * @param string $html
+	 * @param string $class
+	 *
+	 * @return string
+	 */
+	private function decorateVideoHtmlWithClass($html, $class = '')
+	{
+		return $class
+            ? $this->decorateVideoHtmlWithAttribute($html, 'class', $class)
+            : $html;
+	}
+
+	/**
+	 * Adds an ID attribute to the given video HTML string.
+	 *
+	 * @param string $html
+	 * @param string $id
+	 *
+	 * @return string
+	 */
+	private function decorateVideoHtmlWithId($html, $id = '')
+	{
+		return $id
+            ? $this->decorateVideoHtmlWithAttribute($html, 'id', $id)
+            : $html;
+	}
+
+
+	/**
+	 * Adds the given attribute to the given HTML.
+	 *
+	 * @param string $html
+	 * @param string $name  The attribute name.
+	 * @param string $value The attribute value.
+	 *
+	 * @return string
+	 */
+	private function decorateVideoHtmlWithAttribute($html, $name, $value)
+	{
+		$attribute = $name . '="' . $value . '"';
+
+		return $this->videoUsesIFrame($html)
+            ? str_replace('<iframe', '<iframe ' . $attribute, $html)
+            : str_replace('<embed', '<embed ' . $attribute, $html);
+	}
 }

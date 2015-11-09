@@ -21,7 +21,13 @@ Installation
 Usage
 -------
 
-	{exp:antenna url='{the_youtube_or_vimeo_url}' max_width="232" max_height="323"  wmode="transparent|opaque|window"}
+	{exp:antenna url="{the_youtube_or_vimeo_url}"
+	             max_width="232"
+	             max_height="323"
+	             wmode="transparent|opaque|window"
+	             class="iframe-or-embed-class another-custom-class"
+	             id="iframe-or-embed-id"
+	}
 	    {embed_code}
 	    {video_title}
 	    {video_author}
